@@ -21,12 +21,22 @@ function clearAll() {
   num1 = num2 = operator = "";
 }
 
+function getActiveNumber() {
+  return operator === "" ? num1 : num2;
+}
+
+function setValue(value) {
+  operator === "" ? (num1 = value) : (num2 = value);
+  displayValue = value;
+}
+
 const buttons = document.querySelectorAll("button");
 const display = document.querySelector(".display");
 
 buttons.forEach((button) => {
   button.addEventListener("click", (event) => {
     const buttonText = event.target.textContent;
+    let num = getActiveNumber();
 
     if (buttonText === "C") {
       clearAll();
@@ -34,18 +44,14 @@ buttons.forEach((button) => {
       displayValue = operate(operator, parseFloat(num1), parseFloat(num2));
       num1 = displayValue.toString();
       num2 = operator = "";
+    } else if (buttonText === "+/-") {
+      num = -num;
+      setValue(num);
     } else if (/^[0-9]+$/.test(buttonText) || buttonText === ".") {
-      if (operator === "") {
-        if ((buttonText != "." || !num1.includes(".")) && num1.length < 10) {
-          num1 += buttonText;
-          displayValue = num1;
-        }
-      } else {
-        if ((buttonText != "." || !num2.includes(".")) && num2.length < 10) {
-          num2 += buttonText;
-          displayValue = num2;
-        }
+      if ((buttonText !== "." || !num.includes(".")) && num.length < 10) {
+        num += buttonText;
       }
+      setValue(num);
     } else if (/[+\-*/]/.test(buttonText)) {
       if (num2 !== "") {
         displayValue = operate(operator, parseFloat(num1), parseFloat(num2));
@@ -53,13 +59,17 @@ buttons.forEach((button) => {
         num2 = "";
       }
       operator = buttonText;
+    } else if (buttonText === "DEL") {
+      num = num.slice(0, -1);
+      setValue(num);
+      displayValue = num || "0";
     }
 
+    // Update the display
     if (displayValue.toString().length > 12) {
       display.textContent = parseFloat(displayValue).toExponential(6);
     } else {
       display.textContent = displayValue;
     }
-    
   });
 });
