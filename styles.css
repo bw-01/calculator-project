@@ -53,3 +53,8 @@ button {
 .equals {
     flex: 1.85;
 }
+
+.button-pressed {
+    opacity: 0.8;
+}
+

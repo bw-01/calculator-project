@@ -30,11 +30,18 @@ function setValue(value) {
   displayValue = value;
 }
 
+window.addEventListener("keydown", function (event) {
+  const key = document.querySelector(`button[data-key='${event.keyCode}']`);
+  key.click();
+});
+
 const buttons = document.querySelectorAll("button");
 const display = document.querySelector(".display");
 
 buttons.forEach((button) => {
   button.addEventListener("click", (event) => {
+    button.classList.add("button-pressed");
+    setTimeout(() => button.classList.remove("button-pressed"), 200); 
     const buttonText = event.target.textContent;
     let num = getActiveNumber();
 
@@ -45,8 +52,12 @@ buttons.forEach((button) => {
       num1 = displayValue.toString();
       num2 = operator = "";
     } else if (buttonText === "+/-") {
-      num = -num;
+      num = (parseFloat(num) * -1).toString();
       setValue(num);
+    } else if (buttonText === "DEL") {
+      num = num.slice(0, -1);
+      setValue(num);
+      displayValue = num || "0";
     } else if (/^[0-9]+$/.test(buttonText) || buttonText === ".") {
       if ((buttonText !== "." || !num.includes(".")) && num.length < 10) {
         num += buttonText;
@@ -59,10 +70,6 @@ buttons.forEach((button) => {
         num2 = "";
       }
       operator = buttonText;
-    } else if (buttonText === "DEL") {
-      num = num.slice(0, -1);
-      setValue(num);
-      displayValue = num || "0";
     }
 
     // Update the display
@@ -73,3 +80,5 @@ buttons.forEach((button) => {
     }
   });
 });
+
+
