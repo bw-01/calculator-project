@@ -47,11 +47,11 @@ button {
 .clear, .delete {
     background-color: #90ee90;
     border: 1px solid;
-    flex: 3;
+    flex: 1 0 37.5%;
 }
 
 .equals {
-    flex: 1.85;
+    flex: 1 0 25%;
 }
 
 .button-pressed {
