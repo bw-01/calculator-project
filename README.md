@@ -8,4 +8,5 @@ A basic calculator app to demonstrate proficiency with HTML, CSS, and JavaScript
 
 ## Usage
 
-- The hosted app can be accessed via the AWS S3 URL: http://bw-calculator-app.s3-website-ap-southeast-2.amazonaws.com/
+- Access via GitHub Pages: https://bw-01.github.io/calculator-project/
+- Access via AWS S3: http://bw-calculator-app.s3-website-ap-southeast-2.amazonaws.com/
