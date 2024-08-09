@@ -25,6 +25,10 @@ async function calculate(op, num1, num2) {
       throw new Error(data.message || "Failed to fetch");
     }
     const resultData = JSON.parse(data.body);
+
+    const history = await fetchHistory();
+    displayHistory(history);
+
     return resultData.result;
   } catch (error) {
     console.error("Error during fetch:", error);
@@ -46,17 +50,12 @@ function getActiveNumber() {
 
 // Updates the relevent number
 function setValue(value) {
-  if (operator === "") {
-    num1 = value;
-  } else {
-    num2 = value;
-  }
+  operator === "" ? (num1 = value) : (num2 = value);
   displayValue = value;
 }
 
 // Add keyboard functionality
 window.addEventListener("keydown", function (event) {
-  console.log("Key pressed:", event.keyCode, event.shiftKey);
   let key = document.querySelector(`button[data-key='${event.keyCode}']`);
 
   if (event.shiftKey && event.keyCode === 56) {
@@ -81,7 +80,6 @@ buttons.forEach((button) => {
     button.classList.add("button-pressed");
     setTimeout(() => button.classList.remove("button-pressed"), 200);
     const buttonText = event.target.textContent;
-    console.log("Button clicked:", buttonText);
     let num = getActiveNumber();
 
     // Handle each button action
@@ -91,7 +89,6 @@ buttons.forEach((button) => {
       console.log("Calculating:", { operator, num1, num2 });
       const result = await calculate(operator, num1, num2);
       console.log("Calculation result:", result);
-
       if (result !== null && result !== undefined) {
         displayValue = result.toString();
         num1 = displayValue;
@@ -133,4 +130,51 @@ buttons.forEach((button) => {
       display.textContent = displayValue;
     }
   });
+});
+
+// Fetch history from DynamoDB
+async function fetchHistory() {
+  const url = `https://7bo9n25hr3.execute-api.ap-southeast-2.amazonaws.com/Test/history`;
+  console.log("Fetching history from URL:", url);
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    console.log("History response:", data);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch history");
+    }
+
+    const historyItems = JSON.parse(data.body);
+    return historyItems;
+  } catch (error) {
+    console.error("Error fetching history:", error);
+    alert("An error occurred while fetching the history: " + error.message);
+    return [];
+  }
+}
+
+// Format and display history
+function displayHistory(history) {
+  const historyContainer = document.querySelector(".history");
+  historyContainer.innerHTML = "";
+
+  if (history.length === 0) {
+    historyContainer.textContent = "No history available.";
+    return;
+  }
+
+  history.forEach((item) => {
+    const historyItem = document.createElement("div");
+    historyItem.className = "history-item";
+    historyItem.textContent = `${item.num1} ${item.operator} ${item.num2} = ${item.result}`;
+    historyContainer.appendChild(historyItem);
+  });
+}
+
+// Fetch on reload
+document.addEventListener("DOMContentLoaded", async () => {
+  const history = await fetchHistory();
+  displayHistory(history);
 });
